@@ -1,0 +1,151 @@
+include "std.porth"
+
+// in : s n
+// out: ((s // n) + n) // 2
+// one iteration of the Babylonian method
+macro _apply
+  over over /
+  over +
+  2 /
+  swap drop
+  swap drop
+end
+
+// in : s
+// out: floor(sqrt(s))
+// uses Babylonian method
+macro whole_sqrt
+  if dup 1 = do  // 1 is a special case for Babylonian method
+    drop 1  // sqrt(1) == 1
+  else if dup 0 < do
+    "Data: " eputs dup print
+    here eputs " Cannot take a negative sqrt" eputs 1 exit
+  else  // general case
+    dup  // previous
+    dup 2 /  // current - firt bad guess
+    while 2dup swap < do
+      swap drop // we don't need previous anymore
+      // dup print // debug
+      2dup _apply // apply one iteration and get current
+      // old current becomes previous
+    end
+    drop // drop current
+    swap drop // drop s
+    // leave previous
+  end end
+end
+
+// in : number root
+// out: number == root**2
+macro is_root
+  dup * =
+end
+
+// in : number
+// out: number == whole_sqrt(number)**2
+macro is_perfect_square
+  dup whole_sqrt is_root
+end
+
+// test whole_sqrt
+// 100 while dup -101 != do
+//   "Number: " puts dup print
+//   "Result: " puts dup whole_sqrt print
+//   "\n" puts
+//   1 -
+// end
+// drop
+
+// test is_perfect_square
+// 100 while dup -101 != do
+//   if dup is_perfect_square do
+//     "Number: " puts dup print
+//     "\n" puts
+//   end
+//   1 -
+// end
+// drop
+
+macro sum 1000 end
+
+
+sum 1 - // whole_sqrt
+// if sum over is_root do 1 - end
+
+
+// c = 1000 - a - b = sqrt(a**2 + b**2)
+// (1000 - a - b)**2 = a**2 + b**2
+
+while dup 0 > do
+//   dup print
+  dup 1 - while dup 0 > do
+    // a b ((a**2 + b**2) == ((-b - a) + sum))
+    2dup
+    over dup * over dup * +
+    dup *
+    rot rot
+    -1 * swap - sum +
+    2 dup print print
+    if = do
+      0 0
+      2dup print print
+    end
+
+    // if dup 0 >= do // over is_perfect_square and
+    //   if dup is_perfect_square do
+    //     print print print 0 0 0
+    //   end
+    // end
+    // drop
+    // "## " puts dup print
+    // "### " puts over dup * over dup * + -1 * sum + print
+    1 -
+  end drop
+  1 -
+end drop
+
+"end\n" puts
+
+// 1 -69 while
+//   drop sum over dup * -
+//   dup 0 >=
+// do
+//   over print
+//   // a rem1 b (rem1-b**2)
+//   // a rem1 b
+//   1 -69 while
+//     drop over over dup * -
+//     dup 0 >=
+//   do
+//     "## " puts over print
+//     swap 1 + swap
+//   end 2drop
+//   swap 1 + swap
+// end 2drop
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// sum 1 while over over dup * > do
+//   sum over dup * - print
+// //   dup 1 while over over dup * > do
+// //     "## " puts dup print
+// //     1 -
+// //   end 2drop
+//   1 +
+// end 2drop
